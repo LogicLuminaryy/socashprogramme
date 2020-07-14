@@ -1,0 +1,231 @@
+#include <stdio.h>
+#include<iostream>
+#include <algorithm> // for std::find
+#include <iterator>
+using namespace std;
+
+void Winner(int player){
+    switch(player){
+        case 1:
+        {
+            cout << "First player is the winner" << endl;
+            break;
+        }
+        case 2:
+        {
+            cout << "Second player is the winner" << endl;
+            break;
+        }
+        case 3:
+        {
+            cout << "Third player is the winner" << endl;
+            break;
+        }
+        case 4:
+        {
+            cout << "Fourth player is the winner" << endl;
+            break;
+        }
+    }   
+}
+
+bool SameThreeNumbers(int players[5][14]){
+    bool first = std::find(std::begin(players[1]), std::end(players[1]), 3) != std::end(players[1]);
+    bool second = std::find(std::begin(players[2]), std::end(players[2]), 3) != std::end(players[2]);
+    bool third = std::find(std::begin(players[3]), std::end(players[3]), 3) != std::end(players[3]);
+    bool fourth = std::find(std::begin(players[4]), std::end(players[4]), 3) != std::end(players[4]);
+    if(first){
+        Winner(1);
+        return true;
+    }
+    else if(second){
+        Winner(2);
+        return true;
+    }
+    else if(third){
+        Winner(3);
+        return true;
+    }
+    else if(fourth){ 
+        Winner(4);
+        return true;
+    }
+    return false;
+}
+
+bool HasSequence(int players[14]){
+    for(int i = 1; i < 12; i++){
+        if(players[i] == 1){
+            if(players[i + 1] == 1 && players[ i + 2] == 1)
+                return true;
+        }
+    }
+    return false;
+}
+
+bool Sequence(int players[5][14]){
+    bool first = HasSequence(players[1]);
+    bool second = HasSequence(players[2]);
+    bool third = HasSequence(players[3]);
+    bool fourth = HasSequence(players[4]);
+    if(first){
+        Winner(1);
+        return true;
+    }
+    else if(second){
+        Winner(2);
+        return true;
+    }
+    else if(third){
+        Winner(3);
+        return true;
+    }
+    else if(fourth){ 
+        Winner(4);
+        return true;
+    }
+    return false;
+}
+
+bool SameTwoNumbers(int players[5][14]){
+    bool first = std::find(std::begin(players[1]), std::end(players[1]), 2) != std::end(players[1]);
+    bool second = std::find(std::begin(players[2]), std::end(players[2]), 2) != std::end(players[2]);
+    bool third = std::find(std::begin(players[3]), std::end(players[3]), 2) != std::end(players[3]);
+    bool fourth = std::find(std::begin(players[4]), std::end(players[4]), 2) != std::end(players[4]);
+    if(first){
+        Winner(1);
+        return true;
+    }
+    else if(second){
+        Winner(2);
+        return true;
+    }
+    else if(third){
+        Winner(3);
+        return true;
+    }
+    else if(fourth){ 
+        Winner(4);
+        return true;
+    }
+    return false;
+}
+
+void ResolveTie(int players[5][14], int tie1, int tie2)
+{
+    bool resolved = false;
+    int Deck[] = {4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4}; // int Deck[14] = {4} is not working in online compiler
+    cout << "There has been a tie between player " << tie1 << " and " << tie2 << ". Draw Cards." << endl;
+    while(!resolved)
+    {
+        int number1, number2;
+        bool assigned = false;
+        while(!assigned)
+        {
+            number1 = rand() % 13 + 1;
+            if(Deck[number1] > 0)
+            {
+                Deck[number1] -= 1;
+                assigned = true;
+            }
+        }
+        assigned = false;
+        while(!assigned)
+        {
+            number2 = rand() % 13 + 1;
+            if(Deck[number2] > 0)
+            {
+                Deck[number2] -= 1;
+                assigned = true;
+            }
+        }
+        cout << number1 << " " << number2 << endl;
+        if(number1 != number2)
+        {
+            cout << "Resolved Tie" << endl;
+            if(number1 != 1 && number2 != 1)
+            {
+                if(number1 > number2)
+                    Winner(tie1);
+                else
+                    Winner(tie2);
+            }
+            else
+            {
+                if(number1 == 1)
+                    Winner(tie1);
+                else
+                    Winner(tie2);
+            }
+            resolved = true; // not necessary
+            break;
+        }
+        else
+        {
+            cout << "Tie. Draw again." << endl;
+        }
+    }
+}
+
+void findTopCard(int players[5][14]){
+    int i = 13;
+    int n = 0;
+    while(i != 0){
+        if(players[1][i] == 1 || players[2][i] == 1 || players[3][i] == 1 || players[4][i] == 1){
+            n = players[1][i] + players[2][i] + players[3][i] + players[4][i];
+            break;
+        }
+        i--;
+    }
+    if(i != 0) // which obviously be not
+    {
+        if(n == 1){
+            Winner(players[1][i] == 1 ? 1 : (players[2][i] == 1 ? 2 : (players[3][i] == 1 ? 3 : 4)));
+        }
+        else
+        {
+            if(players[1][i] == 0 && players[2][i] == 0)
+                ResolveTie(players, 3, 4);
+            else if(players[1][i] == 1 && players[2][i] == 1)
+                ResolveTie(players, 1, 2);
+            else 
+                ResolveTie(players, players[1][i] == 1 ? 1 : 2, players[3][i] == 1 ? 3 : 4);
+        }
+            
+    } 
+}
+
+int main()
+{
+    int players[5][14] = {0};
+    int Deck[] = {4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4}; // int Deck[14] = {4} is not working in online compiler
+    for(int i = 1; i <= 4; i++)
+    {
+        cout << "Player " << i << ": ";
+        for(int j = 1; j <= 3; j++)
+        {
+            bool assigned = false;
+            while(!assigned){
+                int number = rand() % 13 + 1;
+                if(Deck[number] > 0)
+                {
+                    players[i][number] += 1;
+                    Deck[number] -= 1;
+                    cout << number << " ";
+                    assigned = true;
+                }
+            }
+        }
+        cout << endl;
+    }
+    if(!SameThreeNumbers(players))
+        if(!Sequence(players))
+            if(!SameTwoNumbers(players))
+                findTopCard(players);
+    return 0;
+}
+
+
+/*This program performs basic functionalities.There are following flaws which can be corrected.
+1. Assumed that tie can be between two players, not more than that.
+2. Assumed that there will not be tie for 3 cards with same numbers, 2 cards with same numbers and Sequential cards. */
